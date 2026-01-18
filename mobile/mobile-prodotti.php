@@ -492,9 +492,9 @@ if ($filtro_varieta > 0) {
             background: rgba(85, 126, 52, 0.95);
             color: white;
             text-align: center;
-            padding: 8px 10px;
+            padding: 10px;
             font-size: 0.65rem;
-            line-height: 1.3;
+            line-height: 1.4;
             z-index: 850;
             box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
         }
@@ -1154,6 +1154,7 @@ if ($filtro_varieta > 0) {
 
     <!-- Footer legale discreto -->
     <div class="legal-footer-mobile">
+        Coral Plant Srl | P.IVA: 09087111218<br>
         <a href="mobile-privacy.php">Privacy Policy</a>
         <span class="separator">•</span>
         <a href="mobile-termini.php">Termini e Condizioni</a>
