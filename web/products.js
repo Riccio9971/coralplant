@@ -14,8 +14,17 @@ document.addEventListener('DOMContentLoaded', function () {
     // 4. Gestione filtri mobili
     initMobileFilters();
 
-    // 5. Altre funzionalità 
+    // 5. Altre funzionalità
     initMiscFeatures();
+
+    // 6. Gestione browser back/forward button
+    window.addEventListener('popstate', function(event) {
+        if (event.state) {
+            // Ricarica i prodotti in base allo stato salvato
+            const url = window.location.href;
+            loadProductsAjax(url);
+        }
+    });
 
     // Gestione filtri mobili
     function initMobileFilters() {
@@ -75,15 +84,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Funzione per migliorare l'interattività della sidebar
+    // Funzione per migliorare l'interattività della sidebar con caricamento AJAX
     function initSidebarEnhancements() {
         const sidebar = document.querySelector('.sidebar');
-
-        // Ripristina la posizione dello scroll della sidebar al caricamento
-        if (sidebar && sessionStorage.getItem('sidebarScrollPosition')) {
-            const savedScrollPosition = parseInt(sessionStorage.getItem('sidebarScrollPosition'), 10);
-            sidebar.scrollTop = savedScrollPosition;
-        }
 
         // Gestione click su categoria (intera area)
         document.querySelectorAll('.filter-category').forEach(category => {
@@ -104,45 +107,32 @@ document.addEventListener('DOMContentLoaded', function () {
                     return;
                 }
 
-                // Altrimenti naviga all'URL associato
+                // Altrimenti carica i prodotti via AJAX
+                e.preventDefault();
                 const url = this.getAttribute('data-url');
                 if (url) {
-                    // Salva la posizione dello scroll della sidebar prima di navigare
-                    if (sidebar) {
-                        sessionStorage.setItem('sidebarScrollPosition', sidebar.scrollTop);
+                    loadProductsAjax(url);
+
+                    // Feedback tattile su mobile
+                    if ('vibrate' in navigator) {
+                        navigator.vibrate(20);
                     }
-
-                    // Aggiungi un effetto di caricamento
-                    document.body.classList.add('loading-transition');
-
-                    // Naviga all'URL
-                    window.location.href = url;
                 }
             });
         });
 
         // Gestione click su elemento varietà (intera area)
         document.querySelectorAll('.filter-item').forEach(item => {
-            item.addEventListener('click', function () {
+            item.addEventListener('click', function (e) {
+                e.preventDefault();
                 const url = this.getAttribute('data-url');
                 if (url) {
-                    // Salva la posizione dello scroll della sidebar prima di navigare
-                    if (sidebar) {
-                        sessionStorage.setItem('sidebarScrollPosition', sidebar.scrollTop);
-                    }
-
-                    // Aggiungi un effetto di caricamento
-                    document.body.classList.add('loading-transition');
+                    loadProductsAjax(url);
 
                     // Feedback tattile su mobile
                     if ('vibrate' in navigator) {
                         navigator.vibrate(25);
                     }
-
-                    // Naviga all'URL con un leggero ritardo per permettere l'effetto visivo
-                    setTimeout(() => {
-                        window.location.href = url;
-                    }, 100);
                 }
             });
         });
@@ -150,20 +140,27 @@ document.addEventListener('DOMContentLoaded', function () {
         // Gestione click su "Visualizza catalogo completo"
         const viewAllLink = document.querySelector('.view-all-filters');
         if (viewAllLink) {
-            viewAllLink.addEventListener('click', function () {
-                // Salva la posizione dello scroll della sidebar prima di navigare
-                if (sidebar) {
-                    sessionStorage.setItem('sidebarScrollPosition', sidebar.scrollTop);
+            viewAllLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                const url = this.getAttribute('href');
+                if (url) {
+                    loadProductsAjax(url);
                 }
             });
         }
 
-        // Aggiungi una classe al body quando viene selezionata una varietà
+        // Inizializza lo stato della sidebar basato sui parametri URL
+        initSidebarState();
+    }
+
+    // Funzione per inizializzare lo stato della sidebar basato sull'URL
+    function initSidebarState() {
         const urlParams = new URLSearchParams(window.location.search);
+
         if (urlParams.has('varieta')) {
             document.body.classList.add('variety-selected');
 
-            // Evidenzia visivamente l'elemento della varietà selezionata
+            // Evidenzia visualmente l'elemento della varietà selezionata
             const varietyId = urlParams.get('varieta');
             const selectedItem = document.querySelector(`.filter-item[data-variety-id="${varietyId}"]`);
             if (selectedItem) {
@@ -175,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     parentList.classList.add('expanded');
 
                     // Assicurati che l'icona della categoria sia espansa
-                    const categoryIcon = parentList.previousElementSibling.querySelector('.filter-icon');
+                    const categoryIcon = parentList.previousElementSibling?.querySelector('.filter-icon');
                     if (categoryIcon) {
                         categoryIcon.classList.add('expanded');
                     }
@@ -186,16 +183,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         category.classList.add('active');
                     }
                 }
-
-                // Se non c'è una posizione salvata, scrolla verso l'elemento selezionato
-                // altrimenti mantieni la posizione salvata (già ripristinata sopra)
-                if (sidebar && !sessionStorage.getItem('sidebarScrollPosition')) {
-                    // Scrolla l'elemento selezionato al centro della sidebar
-                    selectedItem.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'center'
-                    });
-                }
             }
         }
 
@@ -204,14 +191,359 @@ document.addEventListener('DOMContentLoaded', function () {
             const specieId = urlParams.get('specie');
             const specieCategory = document.querySelector(`.filter-category[data-url*="specie=${specieId}"]`);
 
-            if (specieCategory && sidebar && !sessionStorage.getItem('sidebarScrollPosition')) {
-                // Se non c'è una posizione salvata, scrolla verso la specie selezionata
-                specieCategory.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center'
-                });
+            if (specieCategory) {
+                specieCategory.classList.add('active');
+
+                // Espandi le varietà di questa specie
+                const filterItems = specieCategory.nextElementSibling;
+                const filterIcon = specieCategory.querySelector('.filter-icon');
+                if (filterItems) {
+                    filterItems.classList.add('expanded');
+                }
+                if (filterIcon) {
+                    filterIcon.classList.add('expanded');
+                }
             }
         }
+
+        // Gestisci show_all
+        if (urlParams.has('show_all')) {
+            const viewAllLink = document.querySelector('.view-all-filters');
+            if (viewAllLink) {
+                viewAllLink.classList.add('active');
+            }
+        }
+    }
+
+    // Funzione per caricare i prodotti via AJAX
+    async function loadProductsAjax(url) {
+        try {
+            // Mostra indicatore di caricamento
+            document.body.classList.add('loading-transition');
+            const productsContainer = document.querySelector('.products-container');
+            if (productsContainer) {
+                productsContainer.style.opacity = '0.5';
+                productsContainer.style.pointerEvents = 'none';
+            }
+
+            // Estrai i parametri dall'URL
+            const urlObj = new URL(url, window.location.origin);
+            const params = urlObj.searchParams;
+
+            // Costruisci l'URL per l'endpoint AJAX
+            const ajaxUrl = 'load-products-ajax.php?' + params.toString();
+
+            // Effettua la richiesta AJAX
+            const response = await fetch(ajaxUrl);
+            const data = await response.json();
+
+            if (!data.success) {
+                throw new Error(data.error || 'Errore nel caricamento dei dati');
+            }
+
+            // Aggiorna il contenuto della pagina
+            updatePageContent(data);
+
+            // Aggiorna le classi active nella sidebar
+            updateActiveFilters(data.filters);
+
+            // Aggiorna l'URL del browser senza ricaricare la pagina
+            history.pushState(data.filters, '', url);
+
+            // Rimuovi l'indicatore di caricamento
+            if (productsContainer) {
+                productsContainer.style.opacity = '1';
+                productsContainer.style.pointerEvents = 'auto';
+            }
+            document.body.classList.remove('loading-transition');
+
+        } catch (error) {
+            console.error('Errore nel caricamento dei prodotti:', error);
+
+            // In caso di errore, fallback alla navigazione normale
+            window.location.href = url;
+        }
+    }
+
+    // Funzione per aggiornare il contenuto della pagina
+    function updatePageContent(data) {
+        const productsHeader = document.querySelector('.products-header');
+        const productsGrid = document.querySelector('.products-grid');
+        const productsContainer = document.querySelector('.products-container');
+
+        if (!productsContainer) return;
+
+        // Aggiorna titolo e sottotitolo
+        if (productsHeader) {
+            const title = productsHeader.querySelector('.products-title');
+            const subtitle = productsHeader.querySelector('.products-subtitle');
+
+            if (title) title.textContent = data.title;
+            if (subtitle) subtitle.textContent = data.subtitle;
+        }
+
+        // Rimuovi contenuto esistente (tranne header)
+        const existingGrid = productsContainer.querySelector('.products-grid, .no-products');
+        if (existingGrid) {
+            existingGrid.remove();
+        }
+
+        // Renderizza il nuovo contenuto in base al tipo
+        let newContent;
+        if (data.type === 'specie') {
+            newContent = renderSpecieCards(data.data);
+        } else if (data.type === 'varieta') {
+            newContent = renderVarietaCards(data.data);
+        } else if (data.type === 'prodotti') {
+            newContent = renderProductCards(data.data);
+        }
+
+        // Aggiungi il nuovo contenuto al container
+        if (newContent) {
+            productsContainer.appendChild(newContent);
+        }
+
+        // Re-inizializza gli event listener per le nuove card
+        initCardAnimations();
+        initProductModal();
+    }
+
+    // Funzione per renderizzare le card delle specie
+    function renderSpecieCards(specie) {
+        if (!specie || specie.length === 0) {
+            return createNoProductsMessage('Nessuna categoria trovata', 'Non ci sono categorie disponibili.');
+        }
+
+        const grid = document.createElement('div');
+        grid.className = 'products-grid';
+
+        specie.forEach((s, index) => {
+            const card = document.createElement('div');
+            card.className = 'product-card species-card';
+            card.dataset.index = index;
+            card.onclick = () => loadProductsAjax(`prodotti.php?specie=${s.id}`);
+
+            const imagePath = s.immagine ? `admin/uploads/piante/${s.immagine}` : null;
+
+            card.innerHTML = `
+                <div class="product-image-container">
+                    ${imagePath ?
+                        `<img src="${imagePath}" alt="${escapeHtml(s.nome)}" class="product-image" onerror="this.parentElement.innerHTML='<div class=\\'placeholder-image\\'><i class=\\'fas fa-leaf\\' style=\\'font-size: 4rem; color: var(--olivine);\\'></i></div>'">` :
+                        `<div class="placeholder-image"><i class="fas fa-leaf" style="font-size: 4rem; color: var(--olivine);"></i></div>`
+                    }
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">${escapeHtml(s.nome)}</h3>
+                    <p class="product-category">
+                        <i class="fas fa-leaf"></i>
+                        Specie
+                    </p>
+                    <p class="product-description">
+                        ${s.num_prodotti} prodott${s.num_prodotti == 1 ? 'o' : 'i'} disponibil${s.num_prodotti == 1 ? 'e' : 'i'}
+                    </p>
+                    <div class="product-action">
+                        <button class="view-details-btn">
+                            <i class="fas fa-arrow-right"></i> Vedi varietà
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            grid.appendChild(card);
+        });
+
+        return grid;
+    }
+
+    // Funzione per renderizzare le card delle varietà
+    function renderVarietaCards(varieta) {
+        if (!varieta || varieta.length === 0) {
+            return createNoProductsMessage(
+                'Nessuna varietà trovata',
+                'Non ci sono varietà disponibili per questa specie.',
+                'prodotti.php',
+                'Torna a tutte le categorie'
+            );
+        }
+
+        const grid = document.createElement('div');
+        grid.className = 'products-grid';
+
+        varieta.forEach((v, index) => {
+            const card = document.createElement('div');
+            card.className = 'product-card variety-card';
+            card.dataset.index = index;
+            card.onclick = () => loadProductsAjax(`prodotti.php?varieta=${v.id}`);
+
+            const imagePath = v.immagine ? `admin/uploads/piante/${v.immagine}` : null;
+
+            card.innerHTML = `
+                <div class="product-image-container">
+                    ${imagePath ?
+                        `<img src="${imagePath}" alt="${escapeHtml(v.nome)}" class="product-image" onerror="this.parentElement.innerHTML='<div class=\\'placeholder-image\\'><i class=\\'fas fa-leaf\\' style=\\'font-size: 4rem; color: var(--olivine);\\'></i></div>'">` :
+                        `<div class="placeholder-image"><i class="fas fa-leaf" style="font-size: 4rem; color: var(--olivine);"></i></div>`
+                    }
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">${escapeHtml(v.nome)}</h3>
+                    <p class="product-category">
+                        <i class="fas fa-spa"></i>
+                        Varietà
+                    </p>
+                    <p class="product-description">
+                        ${v.num_prodotti} prodott${v.num_prodotti == 1 ? 'o' : 'i'} disponibil${v.num_prodotti == 1 ? 'e' : 'i'}
+                    </p>
+                    <div class="product-action">
+                        <button class="view-details-btn">
+                            <i class="fas fa-arrow-right"></i> Vedi prodotti
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            grid.appendChild(card);
+        });
+
+        return grid;
+    }
+
+    // Funzione per renderizzare le card dei prodotti
+    function renderProductCards(prodotti) {
+        if (!prodotti || prodotti.length === 0) {
+            return createNoProductsMessage(
+                'Nessun prodotto trovato',
+                'Al momento non ci sono prodotti disponibili per questa selezione.',
+                'prodotti.php',
+                'Torna a tutte le categorie'
+            );
+        }
+
+        const grid = document.createElement('div');
+        grid.className = 'products-grid';
+
+        // Salva i dati dei prodotti in una variabile globale per la modale
+        window.prodottiData = prodotti;
+
+        prodotti.forEach((p, index) => {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.dataset.index = index;
+
+            const imagePath = `admin/uploads/piante/${p.nome_file}`;
+            const description = p.descrizione.length > 150 ?
+                p.descrizione.substring(0, 150) + '...' :
+                p.descrizione;
+
+            card.innerHTML = `
+                <div class="product-image-container">
+                    <img src="${imagePath}" alt="${escapeHtml(p.titolo)}" class="product-image" onerror="this.src='../images/placeholder-product.jpg'">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">${escapeHtml(p.titolo)}</h3>
+                    <p class="product-category">
+                        <i class="fas fa-seedling"></i>
+                        ${escapeHtml(p.specie_nome)} &gt; ${escapeHtml(p.varieta_nome)}
+                    </p>
+                    <p class="product-description">${escapeHtml(description)}</p>
+                    <div class="product-action">
+                        <button class="view-details-btn" data-product-index="${index}">
+                            <i class="fas fa-search-plus"></i> Scopri di più
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            grid.appendChild(card);
+        });
+
+        return grid;
+    }
+
+    // Funzione per creare il messaggio "nessun prodotto"
+    function createNoProductsMessage(title, message, linkUrl = null, linkText = null) {
+        const div = document.createElement('div');
+        div.className = 'no-products';
+
+        let innerHTML = `
+            <h3>${escapeHtml(title)}</h3>
+            <p>${escapeHtml(message)}</p>
+        `;
+
+        if (linkUrl && linkText) {
+            innerHTML += `<a href="${linkUrl}" class="back-btn" onclick="event.preventDefault(); loadProductsAjax('${linkUrl}');"><i class="fas fa-arrow-left"></i> ${escapeHtml(linkText)}</a>`;
+        }
+
+        div.innerHTML = innerHTML;
+        return div;
+    }
+
+    // Funzione per aggiornare le classi active nella sidebar
+    function updateActiveFilters(filters) {
+        // Rimuovi tutte le classi active esistenti
+        document.querySelectorAll('.filter-category.active, .filter-item.active, .view-all-filters.active').forEach(el => {
+            el.classList.remove('active');
+        });
+
+        // Chiudi tutte le liste di varietà
+        document.querySelectorAll('.filter-items.expanded').forEach(items => {
+            items.classList.remove('expanded');
+        });
+        document.querySelectorAll('.filter-icon.expanded').forEach(icon => {
+            icon.classList.remove('expanded');
+        });
+
+        // Aggiorna in base ai nuovi filtri
+        if (filters.show_all) {
+            const viewAllLink = document.querySelector('.view-all-filters');
+            if (viewAllLink) {
+                viewAllLink.classList.add('active');
+            }
+            document.body.classList.remove('variety-selected');
+        } else if (filters.varieta > 0) {
+            // Seleziona la varietà
+            const varietaItem = document.querySelector(`.filter-item[data-variety-id="${filters.varieta}"]`);
+            if (varietaItem) {
+                varietaItem.classList.add('active');
+
+                // Espandi la lista delle varietà
+                const parentList = varietaItem.closest('.filter-items');
+                const category = parentList?.previousElementSibling;
+                const icon = category?.querySelector('.filter-icon');
+
+                if (parentList) parentList.classList.add('expanded');
+                if (category) category.classList.add('active');
+                if (icon) icon.classList.add('expanded');
+            }
+            document.body.classList.add('variety-selected');
+        } else if (filters.specie > 0) {
+            // Seleziona la specie
+            const specieCategory = document.querySelector(`.filter-category[data-url*="specie=${filters.specie}"]`);
+            if (specieCategory) {
+                specieCategory.classList.add('active');
+
+                // Espandi la lista delle varietà
+                const filterItems = specieCategory.nextElementSibling;
+                const filterIcon = specieCategory.querySelector('.filter-icon');
+
+                if (filterItems) filterItems.classList.add('expanded');
+                if (filterIcon) filterIcon.classList.add('expanded');
+            }
+            document.body.classList.remove('variety-selected');
+        } else {
+            document.body.classList.remove('variety-selected');
+        }
+    }
+
+    // Funzione helper per escapare HTML
+    function escapeHtml(text) {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, m => map[m]);
     }
 
     function initProductModal() {
