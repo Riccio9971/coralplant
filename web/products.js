@@ -157,6 +157,18 @@ document.addEventListener('DOMContentLoaded', function () {
                         category.classList.add('active');
                     }
                 }
+
+                // NON fare scroll automatico - mantieni la posizione della sidebar
+            }
+        }
+
+        // Gestisci anche il caso in cui sia selezionata solo la specie
+        if (urlParams.has('specie') && !urlParams.has('varieta')) {
+            const specieId = urlParams.get('specie');
+            const specieCategory = document.querySelector(`.filter-category[data-url*="specie=${specieId}"]`);
+
+            if (specieCategory) {
+                // NON fare scroll automatico - mantieni la posizione della sidebar
             }
         }
     }
