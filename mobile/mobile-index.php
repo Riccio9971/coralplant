@@ -47,138 +47,239 @@ require_once '../config.php';
 
         /* Hero Section */
         .hero-section {
-            height: 60vh;
-            background: url('../images/azienda.jpeg') center/cover no-repeat;
-            position: relative;
+            height: 70vh;
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(85, 126, 52, 0.5)),
+                        url('../images/azienda.jpeg') center/cover no-repeat;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             text-align: center;
-        }
-
-        .hero-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(85, 126, 52, 0.6));
+            position: relative;
         }
 
         .hero-content {
-            position: relative;
-            z-index: 2;
             padding: 20px;
+            animation: fadeInUp 0.8s ease-out;
         }
 
         .hero-title {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+            font-weight: 700;
         }
 
         .hero-subtitle {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             opacity: 0.95;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
         }
 
         .hero-button {
             background: var(--primary-color);
             color: white;
-            padding: 12px 30px;
-            border-radius: 25px;
+            padding: 15px 35px;
+            border-radius: 30px;
             text-decoration: none;
             display: inline-block;
-            margin-top: 15px;
             font-weight: 600;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            transition: all 0.3s ease;
         }
 
         .hero-button:active {
-            transform: scale(0.98);
+            transform: translateY(2px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
         }
 
         /* Section Styles */
         .section {
-            padding: 40px 20px;
+            padding: 50px 20px;
         }
 
         .section-title {
-            font-size: 1.8rem;
+            font-size: 2rem;
             color: var(--accent-color);
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             position: relative;
+            font-weight: 700;
         }
 
         .section-title::after {
             content: '';
             display: block;
             width: 60px;
-            height: 3px;
+            height: 4px;
             background: var(--primary-color);
-            margin: 10px auto 0;
+            margin: 15px auto 0;
+            border-radius: 2px;
         }
 
-        /* Timeline Chi Siamo */
+        /* Prodotti Carousel */
+        .products-carousel {
+            position: relative;
+            overflow: hidden;
+            margin: 30px 0;
+        }
+
+        .products-track {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding: 10px 5px;
+        }
+
+        .products-track::-webkit-scrollbar {
+            display: none;
+        }
+
+        .product-card-mini {
+            min-width: 280px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            scroll-snap-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card-mini:active {
+            transform: scale(0.98);
+        }
+
+        .product-card-mini img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .product-card-mini h3 {
+            padding: 15px;
+            color: var(--accent-color);
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .view-all-products {
+            display: block;
+            text-align: center;
+            margin: 25px auto 0;
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            width: fit-content;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .view-all-products:active {
+            transform: scale(0.98);
+        }
+
+        /* Timeline Chi Siamo - Animata */
         .timeline {
             position: relative;
             margin: 30px 0;
         }
 
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, var(--primary-color), var(--accent-color));
+        }
+
         .timeline-item {
             background: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow);
-            border-left: 4px solid var(--primary-color);
+            border-radius: 15px;
+            padding: 20px 20px 20px 50px;
+            margin-bottom: 25px;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            opacity: 0;
+            animation: slideInLeft 0.6s ease-out forwards;
+        }
+
+        .timeline-item:nth-child(1) { animation-delay: 0.1s; }
+        .timeline-item:nth-child(2) { animation-delay: 0.2s; }
+        .timeline-item:nth-child(3) { animation-delay: 0.3s; }
+        .timeline-item:nth-child(4) { animation-delay: 0.4s; }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 25px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px var(--primary-color);
         }
 
         .timeline-item h3 {
             color: var(--accent-color);
-            font-size: 1.2rem;
-            margin-bottom: 10px;
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            font-weight: 700;
         }
 
         .timeline-item p {
             color: var(--text-dark);
-            line-height: 1.6;
-            text-align: justify;
+            line-height: 1.7;
+            font-size: 0.95rem;
         }
 
         /* Contatti Section */
         .contact-grid {
             display: grid;
-            gap: 15px;
-            margin-top: 25px;
+            gap: 20px;
+            margin-top: 30px;
         }
 
         .contact-card {
             background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: var(--shadow);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .contact-card:active {
+            transform: translateY(-5px);
         }
 
         .contact-card i {
-            font-size: 2rem;
+            font-size: 2.5rem;
             color: var(--primary-color);
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            display: block;
         }
 
         .contact-card h3 {
             color: var(--accent-color);
-            font-size: 1.1rem;
-            margin-bottom: 8px;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
         }
 
         .contact-card p {
             color: var(--text-dark);
-            line-height: 1.5;
+            line-height: 1.6;
+            font-size: 0.95rem;
         }
 
         .contact-card a {
@@ -191,40 +292,27 @@ require_once '../config.php';
             opacity: 0.7;
         }
 
-        /* Map */
-        .map-container {
-            margin-top: 25px;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-        }
-
-        .map-container iframe {
-            width: 100%;
-            height: 300px;
-            border: none;
-        }
-
         /* Social Links */
         .social-links {
             display: flex;
             justify-content: center;
             gap: 20px;
-            margin-top: 20px;
+            margin-top: 25px;
         }
 
         .social-links a {
-            width: 50px;
-            height: 50px;
+            width: 55px;
+            height: 55px;
             border-radius: 50%;
             background: var(--primary-color);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             text-decoration: none;
-            box-shadow: var(--shadow);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
         }
 
         .social-links a:active {
@@ -300,26 +388,53 @@ require_once '../config.php';
             color: var(--primary-color);
         }
 
-        /* P.IVA Info */
-        .piva-info {
-            text-align: center;
-            padding: 20px;
+        /* Company Info in fondo */
+        .company-info-bottom {
             background: var(--beige-light);
-            border-radius: 12px;
-            margin: 20px 0;
-            font-size: 0.9rem;
-            color: var(--text-light);
+            padding: 20px;
+            text-align: center;
+            margin-top: 40px;
+            border-top: 3px solid var(--primary-color);
         }
 
-        .piva-info strong {
+        .company-info-bottom p {
+            color: var(--text-dark);
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+
+        .company-info-bottom strong {
             color: var(--accent-color);
+            font-size: 1rem;
+        }
+
+        /* Animazioni */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
     </style>
 </head>
 <body>
     <!-- Hero Section -->
     <section class="hero-section">
-        <div class="hero-overlay"></div>
         <div class="hero-content">
             <h1 class="hero-title">Coral Plant</h1>
             <p class="hero-subtitle">Giovani Piante da Reddito</p>
@@ -327,6 +442,44 @@ require_once '../config.php';
                 <i class="fas fa-leaf"></i> Esplora i Prodotti
             </a>
         </div>
+    </section>
+
+    <!-- Sezione Prodotti -->
+    <section id="prodotti" class="section">
+        <h2 class="section-title">I Nostri Prodotti</h2>
+
+        <div class="products-carousel">
+            <div class="products-track">
+                <div class="product-card-mini">
+                    <img src="../images/Violacciocca.jpeg" alt="Violacciocca">
+                    <h3>Violacciocca</h3>
+                </div>
+                <div class="product-card-mini">
+                    <img src="../images/Bocca di leone.jpeg" alt="Bocche di leone">
+                    <h3>Bocche di leone</h3>
+                </div>
+                <div class="product-card-mini">
+                    <img src="../images/Helianthus.jpeg" alt="Helianthus">
+                    <h3>Helianthus</h3>
+                </div>
+                <div class="product-card-mini">
+                    <img src="../images/Delphinium.jpeg" alt="Delphinium">
+                    <h3>Delphinium</h3>
+                </div>
+                <div class="product-card-mini">
+                    <img src="../images/Celosia.jpeg" alt="Celosia">
+                    <h3>Celosia</h3>
+                </div>
+                <div class="product-card-mini">
+                    <img src="../images/Brassica.jpeg" alt="Brassica">
+                    <h3>Brassica</h3>
+                </div>
+            </div>
+        </div>
+
+        <a href="mobile-prodotti.php" class="view-all-products">
+            <i class="fas fa-th-large"></i> Vedi Tutti i Prodotti
+        </a>
     </section>
 
     <!-- Sezione Chi Siamo -->
@@ -353,13 +506,6 @@ require_once '../config.php';
                 <h3>2025 - OGGI</h3>
                 <p>Oggi, leader del settore, la Coral Plant srl vanta di una grande superficie, di circa 4,5 ettari; uno staff professionale e qualificato; collaborazioni e vendite dirette con ditte nazionali ed estere.</p>
             </div>
-        </div>
-
-        <!-- P.IVA Info -->
-        <div class="piva-info">
-            <strong>Coral Plant Srl di Angelo D'apuzzo</strong><br>
-            P.IVA: 09087111218<br>
-            Torre del Greco (NA), Italia
         </div>
     </section>
 
@@ -389,12 +535,6 @@ require_once '../config.php';
                     Dom: Chiuso
                 </p>
             </div>
-
-            <div class="contact-card">
-                <i class="fas fa-map-marker-alt"></i>
-                <h3>Indirizzo</h3>
-                <p>Torre del Greco (NA)<br>Campania, Italia</p>
-            </div>
         </div>
 
         <!-- Social Links -->
@@ -406,17 +546,15 @@ require_once '../config.php';
                 <i class="fab fa-instagram"></i>
             </a>
         </div>
-
-        <!-- Mappa -->
-        <div class="map-container">
-            <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.1!2d14.37!3d40.78!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDDCsDQ2JzQ4LjAiTiAxNMKwMjInMTIuMCJF!5e0!3m2!1sit!2sit!4v1234567890"
-                allowfullscreen=""
-                loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade">
-            </iframe>
-        </div>
     </section>
+
+    <!-- Company Info in Fondo -->
+    <div class="company-info-bottom">
+        <p><strong>Coral Plant Srl di Angelo D'apuzzo</strong></p>
+        <p>P.IVA: 09087111218</p>
+        <p>Torre del Greco (NA), Italia</p>
+        <p>&copy; <?php echo date('Y'); ?> Tutti i diritti riservati</p>
+    </div>
 
     <!-- Footer Mobile -->
     <div class="footer-nav">
@@ -440,7 +578,6 @@ require_once '../config.php';
 
     <!-- Footer legale discreto -->
     <div class="legal-footer-mobile">
-        Coral Plant Srl | P.IVA: 09087111218<br>
         <a href="mobile-privacy.php">Privacy Policy</a>
         <span class="separator">•</span>
         <a href="mobile-termini.php">Termini e Condizioni</a>
@@ -526,7 +663,7 @@ require_once '../config.php';
         window.addEventListener('hashchange', checkHash);
 
         // Feedback tattile per tutti i link
-        document.querySelectorAll('a, button').forEach(element => {
+        document.querySelectorAll('a, button, .product-card-mini, .contact-card').forEach(element => {
             element.addEventListener('touchstart', function() {
                 if (navigator.vibrate) {
                     navigator.vibrate(10);
