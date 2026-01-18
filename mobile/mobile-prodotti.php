@@ -292,7 +292,7 @@ if ($filtro_varieta > 0) {
         }
 
         body {
-            padding-bottom: 180px; /* Spazio per il footer fisso + footer aziendale */
+            padding-bottom: 200px; /* Spazio per il footer fisso + footer aziendale */
         }
 
         h1, h2, h3, h4, h5, h6 {
@@ -489,7 +489,7 @@ if ($filtro_varieta > 0) {
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 50px;
+            height: 70px;
             background: var(--accent-color);
             color: white;
             text-align: center;
@@ -511,6 +511,23 @@ if ($filtro_varieta > 0) {
         .company-footer .copyright {
             opacity: 0.9;
             font-size: 0.65rem;
+        }
+
+        .company-footer .footer-legal-links-mobile {
+            margin-top: 5px;
+            font-size: 0.7rem;
+        }
+
+        .company-footer .footer-legal-links-mobile a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.95;
+            padding: 0 5px;
+            transition: opacity 0.3s;
+        }
+
+        .company-footer .footer-legal-links-mobile a:active {
+            opacity: 0.7;
         }
 
         .footer-link {
@@ -1150,7 +1167,11 @@ if ($filtro_varieta > 0) {
     </div>
   <div class="company-footer">
         <div class="company-name">Coral Plant Srl di Angelo D'apuzzo | P.IVA: 09087111218</div>
-        <div class="copyright">© 2025 Coral Plant. Tutti i diritti riservati.</div>
+        <div class="copyright">© <?php echo date('Y'); ?> Coral Plant. Tutti i diritti riservati.</div>
+        <div class="footer-legal-links-mobile">
+            <a href="mobile-privacy.php">Privacy Policy</a> |
+            <a href="mobile-termini.php">Termini e Condizioni</a>
+        </div>
     </div>
 
     <!-- Passa i dati dei prodotti a JavaScript -->
