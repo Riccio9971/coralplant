@@ -147,10 +147,22 @@ require_once '../config.php';
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             scroll-snap-align: center;
             transition: transform 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
         }
 
         .product-card-mini:active {
             transform: scale(0.98);
+        }
+
+        /* Rimuovi stili link dalle card mini */
+        a.product-card-mini,
+        a.product-card-mini:visited,
+        a.product-card-mini:active,
+        a.product-card-mini:focus {
+            text-decoration: none;
+            color: inherit;
         }
 
         .product-card-mini img {
