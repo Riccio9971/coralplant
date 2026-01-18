@@ -450,30 +450,30 @@ require_once '../config.php';
 
         <div class="products-carousel">
             <div class="products-track">
-                <div class="product-card-mini">
+                <a href="mobile-prodotti.php?specie=28" class="product-card-mini">
                     <img src="../images/Violacciocca.jpeg" alt="Violacciocca">
                     <h3>Violacciocca</h3>
-                </div>
-                <div class="product-card-mini">
+                </a>
+                <a href="mobile-prodotti.php?specie=6" class="product-card-mini">
                     <img src="../images/Bocca di leone.jpeg" alt="Bocche di leone">
                     <h3>Bocche di leone</h3>
-                </div>
-                <div class="product-card-mini">
+                </a>
+                <a href="mobile-prodotti.php?specie=17" class="product-card-mini">
                     <img src="../images/Helianthus.jpeg" alt="Helianthus">
                     <h3>Helianthus</h3>
-                </div>
-                <div class="product-card-mini">
+                </a>
+                <a href="mobile-prodotti.php?specie=14" class="product-card-mini">
                     <img src="../images/Delphinium.jpeg" alt="Delphinium">
                     <h3>Delphinium</h3>
-                </div>
-                <div class="product-card-mini">
+                </a>
+                <a href="mobile-prodotti.php?specie=11" class="product-card-mini">
                     <img src="../images/Celosia.jpeg" alt="Celosia">
                     <h3>Celosia</h3>
-                </div>
-                <div class="product-card-mini">
+                </a>
+                <a href="mobile-prodotti.php?specie=7" class="product-card-mini">
                     <img src="../images/Brassica.jpeg" alt="Brassica">
                     <h3>Brassica</h3>
-                </div>
+                </a>
             </div>
         </div>
 
