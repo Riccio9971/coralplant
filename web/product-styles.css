@@ -484,8 +484,14 @@ body {
     transform: scale(1.08);
 }
 
-.variety-card {
+.variety-card,
+.species-card {
     cursor: pointer;
+}
+
+.species-card:hover,
+.variety-card:hover {
+    box-shadow: 0 8px 20px rgba(85, 126, 52, 0.2);
 }
 
 .product-info {

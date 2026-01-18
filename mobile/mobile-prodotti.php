@@ -724,9 +724,8 @@ if ($filtro_varieta > 0) {
         .slider-container img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: cover;
             transition: opacity 0.3s ease;
-            background: white;
         }
 
         .slider-controls {
