@@ -158,18 +158,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
 
-                // Scrolla alla varietà selezionata nella sidebar dopo un breve ritardo
+                // Scrolla alla varietà selezionata nella sidebar
                 setTimeout(() => {
-                    const sidebar = document.querySelector('.sidebar');
-                    if (sidebar) {
-                        const itemOffset = selectedItem.offsetTop;
-                        const sidebarHeight = sidebar.clientHeight;
-                        const itemHeight = selectedItem.clientHeight;
-
-                        // Scrolla in modo che l'elemento sia visibile al centro della sidebar
-                        sidebar.scrollTop = itemOffset - (sidebarHeight / 2) + (itemHeight / 2);
-                    }
-                }, 100);
+                    selectedItem.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center',
+                        inline: 'nearest'
+                    });
+                }, 200);
             }
         }
 
@@ -181,15 +177,12 @@ document.addEventListener('DOMContentLoaded', function () {
             if (specieCategory) {
                 // Scrolla alla specie selezionata
                 setTimeout(() => {
-                    const sidebar = document.querySelector('.sidebar');
-                    if (sidebar) {
-                        const categoryOffset = specieCategory.offsetTop;
-                        const sidebarHeight = sidebar.clientHeight;
-
-                        // Scrolla in modo che la categoria sia visibile in alto
-                        sidebar.scrollTop = categoryOffset - 20;
-                    }
-                }, 100);
+                    specieCategory.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start',
+                        inline: 'nearest'
+                    });
+                }, 200);
             }
         }
     }
