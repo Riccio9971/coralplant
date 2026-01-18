@@ -164,7 +164,7 @@ if ($mostra_prodotti) {
         JOIN varieta v ON fp.varieta_id = v.id
         JOIN specie s ON v.specie_id = s.id
         WHERE fp.varieta_id = $filtro_varieta_id
-        ORDER BY fp.data_upload DESC";
+        ORDER BY fp.data_upload ASC";
 
     $prodotti_result = $conn->query($prodotti_query);
 

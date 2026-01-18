@@ -177,8 +177,8 @@ if ($filtro_varieta > 0) {
                              fp.descrizione LIKE '%$search_term%')";
     }
 
-    // Ordina per data di caricamento (più recenti prima)
-    $base_query .= " ORDER BY fp.data_upload DESC";
+    // Ordina per data di caricamento (più vecchi prima, ultimi in fondo)
+    $base_query .= " ORDER BY fp.data_upload ASC";
 } elseif (!empty($search_term)) {
     // Se c'è una ricerca
     $search_term = $conn->real_escape_string($search_term);
@@ -196,7 +196,7 @@ if ($filtro_varieta > 0) {
         $base_query .= " AND s.id = $filtro_specie";
     }
 
-    $base_query .= " ORDER BY fp.data_upload DESC";
+    $base_query .= " ORDER BY fp.data_upload ASC";
 } else {
     // Visualizzazione generale o filtrata per specie
     if ($filtro_specie > 0) {
@@ -207,7 +207,7 @@ if ($filtro_varieta > 0) {
             JOIN varieta v ON fp.varieta_id = v.id
             JOIN specie s ON v.specie_id = s.id
             WHERE v.specie_id = $filtro_specie AND fp.is_principale = 1
-            ORDER BY fp.data_upload DESC";
+            ORDER BY fp.data_upload ASC";
 
         // Se non ci sono immagini principali, prendi una qualsiasi immagine per varietà
         $check_result = $conn->query($base_query);
@@ -219,7 +219,7 @@ if ($filtro_varieta > 0) {
                 JOIN specie s ON v.specie_id = s.id
                 WHERE v.specie_id = $filtro_specie
                 GROUP BY v.id
-                ORDER BY fp.data_upload DESC";
+                ORDER BY fp.data_upload ASC";
         }
     } else {
         // Per la visualizzazione di tutte le categorie, mostra solo immagini principali
@@ -229,7 +229,7 @@ if ($filtro_varieta > 0) {
             JOIN varieta v ON fp.varieta_id = v.id
             JOIN specie s ON v.specie_id = s.id
             WHERE fp.is_principale = 1
-            ORDER BY fp.data_upload DESC";
+            ORDER BY fp.data_upload ASC";
     }
 }
 

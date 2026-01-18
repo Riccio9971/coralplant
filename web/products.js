@@ -14,8 +14,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // 4. Gestione filtri mobili
     initMobileFilters();
 
-    // 5. Altre funzionalità 
+    // 5. Altre funzionalità
     initMiscFeatures();
+
 
     // Gestione filtri mobili
     function initMobileFilters() {
@@ -77,66 +78,92 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Funzione per migliorare l'interattività della sidebar
     function initSidebarEnhancements() {
-        // Gestione click su categoria (intera area)
+        // Gestione click su categoria (intera area) - solo per espandere/collassare
         document.querySelectorAll('.filter-category').forEach(category => {
-            category.addEventListener('click', function (e) {
-                // Se il click è sull'icona, espandi/collassa senza navigare
-                if (e.target.closest('.filter-icon')) {
+            // Gestione click sull'icona per espandere/collassare
+            const icon = category.querySelector('.filter-icon');
+            if (icon) {
+                icon.addEventListener('click', function (e) {
                     e.preventDefault();
-                    const items = this.nextElementSibling;
-                    const icon = this.querySelector('.filter-icon');
+                    e.stopPropagation();
 
+                    const items = category.nextElementSibling;
                     items.classList.toggle('expanded');
-                    icon.classList.toggle('expanded');
+                    this.classList.toggle('expanded');
 
                     // Feedback tattile su mobile
                     if ('vibrate' in navigator) {
                         navigator.vibrate(20);
                     }
-                    return;
-                }
-
-                // Altrimenti naviga all'URL associato
-                const url = this.getAttribute('data-url');
-                if (url) {
-                    // Aggiungi un effetto di caricamento 
-                    document.body.classList.add('loading-transition');
-
-                    // Naviga all'URL
-                    window.location.href = url;
-                }
-            });
+                });
+            }
         });
 
-        // Gestione click su elemento varietà (intera area)
-        document.querySelectorAll('.filter-item').forEach(item => {
-            item.addEventListener('click', function () {
-                const url = this.getAttribute('data-url');
-                if (url) {
-                    // Aggiungi un effetto di caricamento 
-                    document.body.classList.add('loading-transition');
+        // Inizializza lo stato della sidebar basato sui parametri URL
+        initSidebarState();
+    }
 
-                    // Feedback tattile su mobile
-                    if ('vibrate' in navigator) {
-                        navigator.vibrate(25);
-                    }
+    // Funzione per scrollare la sidebar all'elemento specificato
+    function scrollSidebarToElement(sidebar, element) {
+        try {
+            console.log('[Sidebar Scroll] Inizio scroll a elemento:', element);
 
-                    // Naviga all'URL con un leggero ritardo per permettere l'effetto visivo
-                    setTimeout(() => {
-                        window.location.href = url;
-                    }, 100);
-                }
+            // Ottieni le dimensioni
+            const sidebarRect = sidebar.getBoundingClientRect();
+            const elementOffsetTop = element.offsetTop;
+            const sidebarHeight = sidebarRect.height;
+            const elementHeight = element.offsetHeight;
+
+            // Calcola lo scroll target (elemento al centro della sidebar)
+            const scrollTarget = elementOffsetTop - (sidebarHeight / 2) + (elementHeight / 2);
+
+            console.log('[Sidebar Scroll] Parametri:', {
+                elementOffsetTop,
+                sidebarHeight,
+                elementHeight,
+                scrollTarget: Math.max(0, scrollTarget)
             });
-        });
 
-        // Aggiungi una classe al body quando viene selezionata una varietà
+            // Scrolla con animazione fluida
+            sidebar.scrollTo({
+                top: Math.max(0, scrollTarget),
+                behavior: 'smooth'
+            });
+
+            // Aggiungi un highlight visivo temporaneo per feedback
+            const originalBg = window.getComputedStyle(element).backgroundColor;
+            element.style.transition = 'background-color 0.5s ease';
+            element.style.backgroundColor = 'rgba(126, 162, 56, 0.25)';
+
+            setTimeout(() => {
+                element.style.backgroundColor = originalBg;
+                setTimeout(() => {
+                    element.style.transition = '';
+                }, 500);
+            }, 800);
+
+            console.log('[Sidebar Scroll] Scroll completato');
+        } catch (error) {
+            console.error('[Sidebar Scroll] Errore:', error);
+        }
+    }
+
+    // Funzione per inizializzare lo stato della sidebar basato sull'URL
+    function initSidebarState() {
         const urlParams = new URLSearchParams(window.location.search);
+        const sidebar = document.querySelector('.sidebar');
+        let elementToScroll = null;
+
+        console.log('[Sidebar] Init stato sidebar, params:', Object.fromEntries(urlParams));
+
         if (urlParams.has('varieta')) {
             document.body.classList.add('variety-selected');
 
             // Evidenzia visivamente l'elemento della varietà selezionata
             const varietyId = urlParams.get('varieta');
             const selectedItem = document.querySelector(`.filter-item[data-variety-id="${varietyId}"]`);
+            console.log('[Sidebar] Cercando varietà ID:', varietyId, 'Trovato:', selectedItem);
+
             if (selectedItem) {
                 selectedItem.classList.add('active');
 
@@ -146,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     parentList.classList.add('expanded');
 
                     // Assicurati che l'icona della categoria sia espansa
-                    const categoryIcon = parentList.previousElementSibling.querySelector('.filter-icon');
+                    const categoryIcon = parentList.previousElementSibling?.querySelector('.filter-icon');
                     if (categoryIcon) {
                         categoryIcon.classList.add('expanded');
                     }
@@ -158,7 +185,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
 
-                // NON fare scroll automatico - mantieni la posizione della sidebar
+                // Segna per scroll
+                elementToScroll = selectedItem;
+                console.log('[Sidebar] Varietà trovata, sarà scrollata');
             }
         }
 
@@ -166,10 +195,44 @@ document.addEventListener('DOMContentLoaded', function () {
         if (urlParams.has('specie') && !urlParams.has('varieta')) {
             const specieId = urlParams.get('specie');
             const specieCategory = document.querySelector(`.filter-category[data-url*="specie=${specieId}"]`);
+            console.log('[Sidebar] Cercando specie ID:', specieId, 'Trovato:', specieCategory);
 
             if (specieCategory) {
-                // NON fare scroll automatico - mantieni la posizione della sidebar
+                specieCategory.classList.add('active');
+
+                // Espandi le varietà di questa specie
+                const filterItems = specieCategory.nextElementSibling;
+                const filterIcon = specieCategory.querySelector('.filter-icon');
+                if (filterItems) {
+                    filterItems.classList.add('expanded');
+                }
+                if (filterIcon) {
+                    filterIcon.classList.add('expanded');
+                }
+
+                // Segna per scroll
+                elementToScroll = specieCategory;
+                console.log('[Sidebar] Specie trovata, sarà scrollata');
             }
+        }
+
+        // Gestisci show_all
+        if (urlParams.has('show_all')) {
+            const viewAllLink = document.querySelector('.view-all-filters');
+            if (viewAllLink) {
+                viewAllLink.classList.add('active');
+            }
+        }
+
+        // SCROLL AUTOMATICO: dopo aver impostato tutto, scrolla all'elemento
+        if (sidebar && elementToScroll) {
+            console.log('[Sidebar] Programmo scroll a elemento...');
+            // Timeout per assicurarsi che il layout sia completato
+            setTimeout(() => {
+                scrollSidebarToElement(sidebar, elementToScroll);
+            }, 200);
+        } else {
+            console.log('[Sidebar] Nessuno scroll necessario. Sidebar:', !!sidebar, 'Elemento:', !!elementToScroll);
         }
     }
 
