@@ -9,7 +9,7 @@ require_once 'config.php';
 // Imposta i parametri della pagina
 $page_title = 'Prodotti - Coral Plant';
 $additional_css = ['web/product-styles.css'];
-$additional_js = ['web/products.js'];
+$additional_js = ['web/products.js', 'web/products-simple-scroll.js'];
 
 // Ottieni tutte le specie e le relative varietà per la sidebar
 $specie_query = "SELECT id, nome FROM specie ORDER BY nome";
