@@ -77,6 +77,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Funzione per migliorare l'interattività della sidebar
     function initSidebarEnhancements() {
+        const sidebar = document.querySelector('.sidebar');
+
+        // Ripristina la posizione dello scroll della sidebar al caricamento
+        if (sidebar && sessionStorage.getItem('sidebarScrollPosition')) {
+            const savedScrollPosition = parseInt(sessionStorage.getItem('sidebarScrollPosition'), 10);
+            sidebar.scrollTop = savedScrollPosition;
+        }
+
         // Gestione click su categoria (intera area)
         document.querySelectorAll('.filter-category').forEach(category => {
             category.addEventListener('click', function (e) {
@@ -99,7 +107,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Altrimenti naviga all'URL associato
                 const url = this.getAttribute('data-url');
                 if (url) {
-                    // Aggiungi un effetto di caricamento 
+                    // Salva la posizione dello scroll della sidebar prima di navigare
+                    if (sidebar) {
+                        sessionStorage.setItem('sidebarScrollPosition', sidebar.scrollTop);
+                    }
+
+                    // Aggiungi un effetto di caricamento
                     document.body.classList.add('loading-transition');
 
                     // Naviga all'URL
@@ -113,7 +126,12 @@ document.addEventListener('DOMContentLoaded', function () {
             item.addEventListener('click', function () {
                 const url = this.getAttribute('data-url');
                 if (url) {
-                    // Aggiungi un effetto di caricamento 
+                    // Salva la posizione dello scroll della sidebar prima di navigare
+                    if (sidebar) {
+                        sessionStorage.setItem('sidebarScrollPosition', sidebar.scrollTop);
+                    }
+
+                    // Aggiungi un effetto di caricamento
                     document.body.classList.add('loading-transition');
 
                     // Feedback tattile su mobile
@@ -128,6 +146,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
         });
+
+        // Gestione click su "Visualizza catalogo completo"
+        const viewAllLink = document.querySelector('.view-all-filters');
+        if (viewAllLink) {
+            viewAllLink.addEventListener('click', function () {
+                // Salva la posizione dello scroll della sidebar prima di navigare
+                if (sidebar) {
+                    sessionStorage.setItem('sidebarScrollPosition', sidebar.scrollTop);
+                }
+            });
+        }
 
         // Aggiungi una classe al body quando viene selezionata una varietà
         const urlParams = new URLSearchParams(window.location.search);
@@ -158,7 +187,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
 
-                // NON fare scroll automatico - mantieni la posizione della sidebar
+                // Se non c'è una posizione salvata, scrolla verso l'elemento selezionato
+                // altrimenti mantieni la posizione salvata (già ripristinata sopra)
+                if (sidebar && !sessionStorage.getItem('sidebarScrollPosition')) {
+                    // Scrolla l'elemento selezionato al centro della sidebar
+                    selectedItem.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                }
             }
         }
 
@@ -167,8 +204,12 @@ document.addEventListener('DOMContentLoaded', function () {
             const specieId = urlParams.get('specie');
             const specieCategory = document.querySelector(`.filter-category[data-url*="specie=${specieId}"]`);
 
-            if (specieCategory) {
-                // NON fare scroll automatico - mantieni la posizione della sidebar
+            if (specieCategory && sidebar && !sessionStorage.getItem('sidebarScrollPosition')) {
+                // Se non c'è una posizione salvata, scrolla verso la specie selezionata
+                specieCategory.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
             }
         }
     }
