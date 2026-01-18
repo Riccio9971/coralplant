@@ -168,7 +168,8 @@ require_once '../config.php';
         .product-card-mini img {
             width: 100%;
             height: 180px;
-            object-fit: cover;
+            object-fit: contain;
+            background: white;
         }
 
         .product-card-mini h3 {

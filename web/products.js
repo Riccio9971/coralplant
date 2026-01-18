@@ -157,6 +157,39 @@ document.addEventListener('DOMContentLoaded', function () {
                         category.classList.add('active');
                     }
                 }
+
+                // Scrolla alla varietà selezionata nella sidebar dopo un breve ritardo
+                setTimeout(() => {
+                    const sidebar = document.querySelector('.sidebar');
+                    if (sidebar) {
+                        const itemOffset = selectedItem.offsetTop;
+                        const sidebarHeight = sidebar.clientHeight;
+                        const itemHeight = selectedItem.clientHeight;
+
+                        // Scrolla in modo che l'elemento sia visibile al centro della sidebar
+                        sidebar.scrollTop = itemOffset - (sidebarHeight / 2) + (itemHeight / 2);
+                    }
+                }, 100);
+            }
+        }
+
+        // Gestisci anche il caso in cui sia selezionata solo la specie
+        if (urlParams.has('specie') && !urlParams.has('varieta')) {
+            const specieId = urlParams.get('specie');
+            const specieCategory = document.querySelector(`.filter-category[data-url*="specie=${specieId}"]`);
+
+            if (specieCategory) {
+                // Scrolla alla specie selezionata
+                setTimeout(() => {
+                    const sidebar = document.querySelector('.sidebar');
+                    if (sidebar) {
+                        const categoryOffset = specieCategory.offsetTop;
+                        const sidebarHeight = sidebar.clientHeight;
+
+                        // Scrolla in modo che la categoria sia visibile in alto
+                        sidebar.scrollTop = categoryOffset - 20;
+                    }
+                }, 100);
             }
         }
     }

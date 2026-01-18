@@ -393,11 +393,17 @@ a.product-card:focus {
     color: inherit;
 }
 
+/* Rimuovi la linea decorativa dai titoli nelle card link */
+a.product-card .product-title::after {
+    display: none;
+}
+
 .product-image {
     width: 100%;
     height: 250px;
-    object-fit: cover;
+    object-fit: contain;
     transition: transform 0.5s ease;
+    background: white;
 }
 
 .product-card:hover .product-image {
