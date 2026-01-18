@@ -292,7 +292,7 @@ if ($filtro_varieta > 0) {
         }
 
         body {
-            padding-bottom: 200px; /* Spazio per il footer fisso + footer aziendale */
+            padding-bottom: 95px; /* Spazio per il footer fisso + footer legale */
         }
 
         h1, h2, h3, h4, h5, h6 {
@@ -482,52 +482,38 @@ if ($filtro_varieta > 0) {
             justify-content: space-around;
             border-top: 1px solid var(--beige);
         }
-      
-              /* Footer aziendale */
-        .company-footer {
+
+        /* Footer legale discreto - posizionato sopra il footer di navigazione */
+        .legal-footer-mobile {
             position: fixed;
-            bottom: 0;
+            bottom: var(--footer-height);
             left: 0;
             width: 100%;
-            height: 70px;
-            background: var(--accent-color);
+            background: rgba(85, 126, 52, 0.95);
             color: white;
             text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            font-size: 0.7rem;
-            line-height: 1.2;
-            z-index: 800;
+            padding: 8px 10px;
+            font-size: 0.65rem;
+            line-height: 1.3;
+            z-index: 850;
             box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
         }
 
-        .company-footer .company-name {
-            font-weight: 600;
-            margin-bottom: 2px;
-        }
-
-        .company-footer .copyright {
-            opacity: 0.9;
-            font-size: 0.65rem;
-        }
-
-        .company-footer .footer-legal-links-mobile {
-            margin-top: 5px;
-            font-size: 0.7rem;
-        }
-
-        .company-footer .footer-legal-links-mobile a {
+        .legal-footer-mobile a {
             color: white;
             text-decoration: none;
             opacity: 0.95;
-            padding: 0 5px;
-            transition: opacity 0.3s;
+            padding: 0 6px;
+            font-weight: 500;
         }
 
-        .company-footer .footer-legal-links-mobile a:active {
+        .legal-footer-mobile a:active {
             opacity: 0.7;
+        }
+
+        .legal-footer-mobile .separator {
+            opacity: 0.7;
+            padding: 0 3px;
         }
 
         .footer-link {
@@ -1165,13 +1151,12 @@ if ($filtro_varieta > 0) {
             <span>Contatti</span>
         </a>
     </div>
-  <div class="company-footer">
-        <div class="company-name">Coral Plant Srl di Angelo D'apuzzo | P.IVA: 09087111218</div>
-        <div class="copyright">© <?php echo date('Y'); ?> Coral Plant. Tutti i diritti riservati.</div>
-        <div class="footer-legal-links-mobile">
-            <a href="mobile-privacy.php">Privacy Policy</a> |
-            <a href="mobile-termini.php">Termini e Condizioni</a>
-        </div>
+
+    <!-- Footer legale discreto -->
+    <div class="legal-footer-mobile">
+        <a href="mobile-privacy.php">Privacy Policy</a>
+        <span class="separator">•</span>
+        <a href="mobile-termini.php">Termini e Condizioni</a>
     </div>
 
     <!-- Passa i dati dei prodotti a JavaScript -->
