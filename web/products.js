@@ -158,22 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
 
-                // Scrolla alla varietà selezionata nella sidebar
-                // Usa un delay maggiore per permettere al DOM di aggiornarsi completamente
-                setTimeout(() => {
-                    if (selectedItem) {
-                        // Usa requestAnimationFrame per assicurarsi che il layout sia completo
-                        requestAnimationFrame(() => {
-                            requestAnimationFrame(() => {
-                                selectedItem.scrollIntoView({
-                                    behavior: 'smooth',
-                                    block: 'center',
-                                    inline: 'nearest'
-                                });
-                            });
-                        });
-                    }
-                }, 500);
+                // NON fare scroll automatico - mantieni la posizione della sidebar
             }
         }
 
@@ -183,20 +168,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const specieCategory = document.querySelector(`.filter-category[data-url*="specie=${specieId}"]`);
 
             if (specieCategory) {
-                // Scrolla alla specie selezionata
-                setTimeout(() => {
-                    if (specieCategory) {
-                        requestAnimationFrame(() => {
-                            requestAnimationFrame(() => {
-                                specieCategory.scrollIntoView({
-                                    behavior: 'smooth',
-                                    block: 'start',
-                                    inline: 'nearest'
-                                });
-                            });
-                        });
-                    }
-                }, 500);
+                // NON fare scroll automatico - mantieni la posizione della sidebar
             }
         }
     }
