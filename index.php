@@ -83,66 +83,66 @@ include 'web/header.php';
   <h2 class="section-title">I Nostri Prodotti</h2>
   <div class="carousel-container">
     <div class="carousel-track">
-      <!-- Prodotti con card migliorate - SENZA DESCRIZIONE --> 
+      <!-- Prodotti con card migliorate - SENZA DESCRIZIONE -->
       <div class="carousel-item">
-        <div class="product-card">
+        <a href="prodotti.php?specie=28" class="product-card">
           <img src="images/Violacciocca.jpeg" alt="Violacciocca" class="product-image">
           <div class="product-info">
             <h3 class="product-title">Violacciocca</h3>
             <div class="product-badges">
             </div>
           </div>
-        </div>
+        </a>
       </div>
       <div class="carousel-item">
-        <div class="product-card">
+        <a href="prodotti.php?specie=6" class="product-card">
           <img src="images/Bocca di leone.jpeg" alt="Bocche di leone" class="product-image">
           <div class="product-info">
             <h3 class="product-title">Bocche di leone</h3>
             <div class="product-badges">
             </div>
           </div>
-        </div>
+        </a>
       </div>
       <div class="carousel-item">
-        <div class="product-card">
+        <a href="prodotti.php?specie=17" class="product-card">
           <img src="images/Helianthus.jpeg" alt="Helianthus" class="product-image">
           <div class="product-info">
             <h3 class="product-title">Helianthus</h3>
             <div class="product-badges">
             </div>
           </div>
-        </div>
+        </a>
       </div>
       <div class="carousel-item">
-        <div class="product-card">
+        <a href="prodotti.php?specie=14" class="product-card">
           <img src="images/Delphinium.jpeg" alt="Delphinium" class="product-image">
           <div class="product-info">
             <h3 class="product-title">Delphinium</h3>
             <div class="product-badges">
             </div>
           </div>
-        </div>
+        </a>
       </div>
       <div class="carousel-item">
-        <div class="product-card">
+        <a href="prodotti.php?specie=11" class="product-card">
           <img src="images/Celosia.jpeg" alt="Celosia" class="product-image">
           <div class="product-info">
             <h3 class="product-title">Celosia</h3>
             <div class="product-badges">
             </div>
           </div>
-        </div>
+        </a>
       </div>
       <div class="carousel-item">
-        <div class="product-card">
+        <a href="prodotti.php?specie=7" class="product-card">
           <img src="images/Brassica.jpeg" alt="Brassica" class="product-image">
           <div class="product-info">
             <h3 class="product-title">Brassica</h3>
             <div class="product-badges">
             </div>
           </div>
-        </div>
+        </a>
       </div>
 	  </div>
     <button class="carousel-button prev" aria-label="Precedente">&#10094;</button>

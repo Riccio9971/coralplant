@@ -147,10 +147,22 @@ require_once '../config.php';
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             scroll-snap-align: center;
             transition: transform 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
         }
 
         .product-card-mini:active {
             transform: scale(0.98);
+        }
+
+        /* Rimuovi stili link dalle card mini */
+        a.product-card-mini,
+        a.product-card-mini:visited,
+        a.product-card-mini:active,
+        a.product-card-mini:focus {
+            text-decoration: none;
+            color: inherit;
         }
 
         .product-card-mini img {
@@ -450,30 +462,30 @@ require_once '../config.php';
 
         <div class="products-carousel">
             <div class="products-track">
-                <div class="product-card-mini">
+                <a href="mobile-prodotti.php?specie=28" class="product-card-mini">
                     <img src="../images/Violacciocca.jpeg" alt="Violacciocca">
                     <h3>Violacciocca</h3>
-                </div>
-                <div class="product-card-mini">
+                </a>
+                <a href="mobile-prodotti.php?specie=6" class="product-card-mini">
                     <img src="../images/Bocca di leone.jpeg" alt="Bocche di leone">
                     <h3>Bocche di leone</h3>
-                </div>
-                <div class="product-card-mini">
+                </a>
+                <a href="mobile-prodotti.php?specie=17" class="product-card-mini">
                     <img src="../images/Helianthus.jpeg" alt="Helianthus">
                     <h3>Helianthus</h3>
-                </div>
-                <div class="product-card-mini">
+                </a>
+                <a href="mobile-prodotti.php?specie=14" class="product-card-mini">
                     <img src="../images/Delphinium.jpeg" alt="Delphinium">
                     <h3>Delphinium</h3>
-                </div>
-                <div class="product-card-mini">
+                </a>
+                <a href="mobile-prodotti.php?specie=11" class="product-card-mini">
                     <img src="../images/Celosia.jpeg" alt="Celosia">
                     <h3>Celosia</h3>
-                </div>
-                <div class="product-card-mini">
+                </a>
+                <a href="mobile-prodotti.php?specie=7" class="product-card-mini">
                     <img src="../images/Brassica.jpeg" alt="Brassica">
                     <h3>Brassica</h3>
-                </div>
+                </a>
             </div>
         </div>
 
