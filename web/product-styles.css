@@ -470,6 +470,24 @@ body {
     transition: transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+.placeholder-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--beige-light) 0%, var(--beige) 100%);
+    transition: transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.product-card:hover .placeholder-image {
+    transform: scale(1.08);
+}
+
+.variety-card {
+    cursor: pointer;
+}
+
 .product-info {
     padding: 20px;
     flex-grow: 1;
@@ -1131,10 +1149,11 @@ body.modal-open {
     width: 100%;
     height: 100%;
     min-height: 500px;
-    object-fit: cover;
+    object-fit: contain;
     transition: transform 0.5s ease;
     border: 12px solid white;
     box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+    background: white;
 }
 
 .image-slider:hover img {

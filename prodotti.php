@@ -49,59 +49,99 @@ $filtro_specie_id = isset($_GET['specie']) ? intval($_GET['specie']) : 0;
 // MODIFICA: Imposta show_all=1 di default se non ci sono altri filtri attivi
 $show_all = isset($_GET['show_all']) ? $_GET['show_all'] == 1 : true;
 
-// Costruisci la query in base ai filtri
-$prodotti_query = "
-    SELECT fp.*, v.nome as varieta_nome, s.nome as specie_nome 
-    FROM foto_piante fp
-    JOIN varieta v ON fp.varieta_id = v.id
-    JOIN specie s ON v.specie_id = s.id
-    WHERE 1=1";
+// LOGICA COME NEL MOBILE: Se c'è filtro specie ma non varietà, mostra le varietà
+$varieta_list = [];
+$mostra_varieta = false;
 
-// Aggiungi condizioni in base ai filtri
-if ($filtro_varieta_id > 0) {
-    $prodotti_query .= " AND fp.varieta_id = $filtro_varieta_id";
-    $show_all = true; // Se c'è un filtro per varietà, mostra tutti i prodotti di quella varietà
-} elseif ($filtro_specie_id > 0) {
-    $prodotti_query .= " AND v.specie_id = $filtro_specie_id";
-    $show_all = true; // Se c'è un filtro per specie, mostra tutti i prodotti di quella specie
-}
+if ($filtro_specie_id > 0 && $filtro_varieta_id == 0) {
+    // Modalità: mostra le varietà di questa specie (come nel mobile)
+    $mostra_varieta = true;
 
-// Ordina le foto
-$prodotti_query .= " ORDER BY CASE WHEN fp.is_principale = 1 THEN 0 ELSE 1 END, v.nome, fp.titolo, fp.data_upload DESC";
+    $query_varieta = "
+        SELECT v.id, v.nome, COUNT(DISTINCT fp.id) as num_prodotti
+        FROM varieta v
+        LEFT JOIN foto_piante fp ON fp.varieta_id = v.id
+        WHERE v.specie_id = $filtro_specie_id
+        GROUP BY v.id
+        ORDER BY v.nome";
 
-// MODIFICA: Aggiungi limite di 30 prodotti se show_all è attivo ma non ci sono filtri specifici
-if ($show_all && $filtro_varieta_id == 0 && $filtro_specie_id == 0) {
-    $prodotti_query .= " LIMIT 30";
-}
-
-$prodotti_result = $conn->query($prodotti_query);
-
-$prodotti = [];
-if ($prodotti_result && $prodotti_result->num_rows > 0) {
-    while ($row = $prodotti_result->fetch_assoc()) {
-        $prodotti[] = $row;
-    }
-}
-
-// Filtra i prodotti se non è richiesta la visualizzazione di tutti
-if (!$show_all) {
-    // Se non è richiesta la visualizzazione di tutti, mostra solo un prodotto per varietà
-    $prodotti_unici = [];
-    $varieta_mostrate = []; // Tieni traccia delle varietà già mostrate
-    
-    foreach ($prodotti as $prodotto) {
-        $varieta_id = $prodotto['varieta_id'];
-        
-        // Se questa varietà non è ancora stata mostrata, aggiungila all'array
-        if (!isset($varieta_mostrate[$varieta_id])) {
-            $prodotti_unici[] = $prodotto;
-            $varieta_mostrate[$varieta_id] = true;
+    $result_varieta = $conn->query($query_varieta);
+    if ($result_varieta && $result_varieta->num_rows > 0) {
+        while ($row = $result_varieta->fetch_assoc()) {
+            // Ottieni un'immagine rappresentativa per questa varietà
+            $img_query = "SELECT nome_file FROM foto_piante WHERE varieta_id = {$row['id']} AND is_principale = 1 LIMIT 1";
+            $img_result = $conn->query($img_query);
+            if ($img_result && $img_result->num_rows > 0) {
+                $img_row = $img_result->fetch_assoc();
+                $row['immagine'] = $img_row['nome_file'];
+            } else {
+                // Fallback: prendi qualsiasi immagine
+                $img_query_fallback = "SELECT nome_file FROM foto_piante WHERE varieta_id = {$row['id']} LIMIT 1";
+                $img_result_fallback = $conn->query($img_query_fallback);
+                if ($img_result_fallback && $img_result_fallback->num_rows > 0) {
+                    $img_row_fallback = $img_result_fallback->fetch_assoc();
+                    $row['immagine'] = $img_row_fallback['nome_file'];
+                } else {
+                    $row['immagine'] = null;
+                }
+            }
+            $varieta_list[] = $row;
         }
     }
-    
-    // Sostituisci l'array originale con quello filtrato e mescola
-    $prodotti = $prodotti_unici;
-    shuffle($prodotti);
+}
+
+// Costruisci la query per i prodotti SOLO se non stiamo mostrando le varietà
+$prodotti = [];
+if (!$mostra_varieta) {
+    $prodotti_query = "
+        SELECT fp.*, v.nome as varieta_nome, s.nome as specie_nome
+        FROM foto_piante fp
+        JOIN varieta v ON fp.varieta_id = v.id
+        JOIN specie s ON v.specie_id = s.id
+        WHERE 1=1";
+
+    // Aggiungi condizioni in base ai filtri
+    if ($filtro_varieta_id > 0) {
+        $prodotti_query .= " AND fp.varieta_id = $filtro_varieta_id";
+        $show_all = true; // Se c'è un filtro per varietà, mostra tutti i prodotti di quella varietà
+    }
+
+    // Ordina per data di caricamento (più recenti prima)
+    $prodotti_query .= " ORDER BY fp.data_upload DESC";
+
+    // MODIFICA: Aggiungi limite di 30 prodotti se show_all è attivo ma non ci sono filtri specifici
+    if ($show_all && $filtro_varieta_id == 0 && $filtro_specie_id == 0) {
+        $prodotti_query .= " LIMIT 30";
+    }
+
+    $prodotti_result = $conn->query($prodotti_query);
+
+    if ($prodotti_result && $prodotti_result->num_rows > 0) {
+        while ($row = $prodotti_result->fetch_assoc()) {
+            $prodotti[] = $row;
+        }
+    }
+
+    // Filtra i prodotti se non è richiesta la visualizzazione di tutti
+    if (!$show_all) {
+        // Se non è richiesta la visualizzazione di tutti, mostra solo un prodotto per varietà
+        $prodotti_unici = [];
+        $varieta_mostrate = []; // Tieni traccia delle varietà già mostrate
+
+        foreach ($prodotti as $prodotto) {
+            $varieta_id = $prodotto['varieta_id'];
+
+            // Se questa varietà non è ancora stata mostrata, aggiungila all'array
+            if (!isset($varieta_mostrate[$varieta_id])) {
+                $prodotti_unici[] = $prodotto;
+                $varieta_mostrate[$varieta_id] = true;
+            }
+        }
+
+        // Sostituisci l'array originale con quello filtrato e mescola
+        $prodotti = $prodotti_unici;
+        shuffle($prodotti);
+    }
 }
 
 // Ottieni il nome della specie o varietà filtrata per il titolo
@@ -184,7 +224,47 @@ include 'web/header.php';
         <p class="products-subtitle">La nostra selezione di piante di alta qualità</p>
       </div>
 
-      <?php if (empty($prodotti)): ?>
+      <?php if ($mostra_varieta): ?>
+        <!-- Mostra le varietà come categorie (come nel mobile) -->
+        <?php if (empty($varieta_list)): ?>
+          <div class="no-products">
+            <h3>Nessuna varietà trovata</h3>
+            <p>Non ci sono varietà disponibili per questa specie.</p>
+            <a href="prodotti.php" class="back-btn"><i class="fas fa-arrow-left"></i> Torna a tutti i prodotti</a>
+          </div>
+        <?php else: ?>
+          <div class="products-grid">
+            <?php foreach($varieta_list as $index => $varieta): ?>
+              <div class="product-card variety-card" data-index="<?php echo $index; ?>" onclick="window.location.href='prodotti.php?varieta=<?php echo $varieta['id']; ?>'">
+                <div class="product-image-container">
+                  <?php if ($varieta['immagine']): ?>
+                    <img src="admin/uploads/piante/<?php echo htmlspecialchars($varieta['immagine']); ?>" alt="<?php echo htmlspecialchars($varieta['nome']); ?>" class="product-image">
+                  <?php else: ?>
+                    <div class="placeholder-image">
+                      <i class="fas fa-leaf" style="font-size: 4rem; color: var(--olivine);"></i>
+                    </div>
+                  <?php endif; ?>
+                </div>
+                <div class="product-info">
+                  <h3 class="product-title"><?php echo htmlspecialchars($varieta['nome']); ?></h3>
+                  <p class="product-category">
+                    <i class="fas fa-spa"></i>
+                    Varietà
+                  </p>
+                  <p class="product-description">
+                    <?php echo $varieta['num_prodotti']; ?> prodott<?php echo $varieta['num_prodotti'] == 1 ? 'o' : 'i'; ?> disponibil<?php echo $varieta['num_prodotti'] == 1 ? 'e' : 'i'; ?>
+                  </p>
+                  <div class="product-action">
+                    <button class="view-details-btn">
+                      <i class="fas fa-arrow-right"></i> Vedi prodotti
+                    </button>
+                  </div>
+                </div>
+              </div>
+            <?php endforeach; ?>
+          </div>
+        <?php endif; ?>
+      <?php elseif (empty($prodotti)): ?>
         <div class="no-products">
           <h3>Nessun prodotto trovato</h3>
           <p>Al momento non ci sono prodotti disponibili per questa selezione.</p>
