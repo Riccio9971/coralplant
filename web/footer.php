@@ -38,6 +38,10 @@
       <div class="footer-bottom-content">
         <p>Coral Plant Srl di Angelo D'apuzzo | P.IVA: 09087111218</p>
         <p>&copy; <?php echo date('Y'); ?> Coral Plant. Tutti i diritti riservati.</p>
+        <p class="footer-legal-links">
+          <a href="privacy.php">Privacy Policy</a> |
+          <a href="termini.php">Termini e Condizioni</a>
+        </p>
       </div>
     </div>
   </footer>
@@ -125,7 +129,24 @@
       font-size: 0.9em;
       opacity: 0.8;
     }
-    
+
+    .footer-legal-links {
+      margin-top: 10px !important;
+    }
+
+    .footer-legal-links a {
+      color: white;
+      text-decoration: none;
+      opacity: 0.9;
+      transition: opacity 0.3s ease;
+      padding: 0 8px;
+    }
+
+    .footer-legal-links a:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+
     /* Responsive design */
     @media (max-width: 768px) {
       .footer-custom-grid {

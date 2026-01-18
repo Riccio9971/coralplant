@@ -1,0 +1,213 @@
+/*
+ * Stili per le pagine legali (Privacy Policy, Termini e Condizioni)
+ * Coral Plant - Legal Pages Stylesheet
+ */
+
+/* Contenitore principale */
+.legal-section {
+    min-height: calc(100vh - 200px);
+    padding: 100px 20px 60px 20px;
+    background: linear-gradient(to top,
+        rgba(245, 245, 230, 0.15),
+        rgba(179, 213, 155, 0.10),
+        rgba(182, 220, 172, 0.18));
+}
+
+.legal-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--white);
+    padding: 50px 60px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    position: relative;
+}
+
+/* Titolo principale */
+.legal-title {
+    font-size: 2.5rem;
+    color: var(--accent-color);
+    margin-bottom: 15px;
+    text-align: center;
+    font-family: "IBM Plex Serif", serif;
+    font-weight: 600;
+    border-bottom: 3px solid var(--primary-color);
+    padding-bottom: 20px;
+}
+
+.legal-subtitle {
+    text-align: center;
+    color: var(--text-light);
+    font-size: 0.95rem;
+    margin-bottom: 40px;
+    font-style: italic;
+}
+
+/* Contenuto legale */
+.legal-content {
+    line-height: 1.8;
+    color: var(--text-dark);
+}
+
+.legal-content h2 {
+    font-size: 1.6rem;
+    color: var(--primary-color);
+    margin-top: 35px;
+    margin-bottom: 20px;
+    font-family: "IBM Plex Serif", serif;
+    font-weight: 600;
+    border-left: 4px solid var(--asparagus);
+    padding-left: 15px;
+}
+
+.legal-content h2:first-of-type {
+    margin-top: 0;
+}
+
+.legal-content p {
+    margin-bottom: 18px;
+    text-align: justify;
+    color: var(--text-dark);
+}
+
+.legal-content strong {
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+/* Liste */
+.legal-content ul {
+    margin: 20px 0;
+    padding-left: 30px;
+}
+
+.legal-content li {
+    margin-bottom: 12px;
+    line-height: 1.7;
+    position: relative;
+}
+
+.legal-content li::marker {
+    color: var(--primary-color);
+}
+
+/* Link */
+.legal-content a {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 600;
+    border-bottom: 1px solid transparent;
+    transition: var(--transition);
+}
+
+.legal-content a:hover {
+    color: var(--accent-light);
+    border-bottom-color: var(--accent-light);
+}
+
+.legal-content a:active {
+    color: var(--accent-dark);
+}
+
+/* Sezioni speciali */
+.legal-content .highlight-box {
+    background: var(--beige-light);
+    border-left: 4px solid var(--olivine);
+    padding: 20px;
+    margin: 25px 0;
+    border-radius: var(--radius-sm);
+}
+
+.legal-content .highlight-box p:last-child {
+    margin-bottom: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .legal-section {
+        padding: 80px 15px 40px 15px;
+    }
+
+    .legal-container {
+        padding: 30px 25px;
+        border-radius: var(--radius);
+    }
+
+    .legal-title {
+        font-size: 1.8rem;
+        padding-bottom: 15px;
+    }
+
+    .legal-subtitle {
+        font-size: 0.85rem;
+        margin-bottom: 30px;
+    }
+
+    .legal-content h2 {
+        font-size: 1.3rem;
+        margin-top: 25px;
+        margin-bottom: 15px;
+        padding-left: 12px;
+    }
+
+    .legal-content p {
+        text-align: left;
+    }
+
+    .legal-content ul {
+        padding-left: 20px;
+    }
+
+    .legal-content li {
+        margin-bottom: 10px;
+    }
+}
+
+/* Animazioni di ingresso */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.legal-container {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Print styles */
+@media print {
+    .legal-section {
+        background: white;
+        padding: 0;
+    }
+
+    .legal-container {
+        box-shadow: none;
+        padding: 20px;
+    }
+
+    .legal-title {
+        color: #000;
+    }
+
+    .legal-content h2 {
+        color: #000;
+        border-left-color: #000;
+    }
+
+    .legal-content a {
+        color: #000;
+        text-decoration: underline;
+    }
+
+    /* Nascondi elementi non necessari in stampa */
+    nav,
+    .footer {
+        display: none;
+    }
+}
