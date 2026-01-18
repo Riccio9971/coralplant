@@ -103,16 +103,67 @@ document.addEventListener('DOMContentLoaded', function () {
         initSidebarState();
     }
 
+    // Funzione per scrollare la sidebar all'elemento specificato
+    function scrollSidebarToElement(sidebar, element) {
+        try {
+            console.log('[Sidebar Scroll] Inizio scroll a elemento:', element);
+
+            // Ottieni le dimensioni
+            const sidebarRect = sidebar.getBoundingClientRect();
+            const elementOffsetTop = element.offsetTop;
+            const sidebarHeight = sidebarRect.height;
+            const elementHeight = element.offsetHeight;
+
+            // Calcola lo scroll target (elemento al centro della sidebar)
+            const scrollTarget = elementOffsetTop - (sidebarHeight / 2) + (elementHeight / 2);
+
+            console.log('[Sidebar Scroll] Parametri:', {
+                elementOffsetTop,
+                sidebarHeight,
+                elementHeight,
+                scrollTarget: Math.max(0, scrollTarget)
+            });
+
+            // Scrolla con animazione fluida
+            sidebar.scrollTo({
+                top: Math.max(0, scrollTarget),
+                behavior: 'smooth'
+            });
+
+            // Aggiungi un highlight visivo temporaneo per feedback
+            const originalBg = window.getComputedStyle(element).backgroundColor;
+            element.style.transition = 'background-color 0.5s ease';
+            element.style.backgroundColor = 'rgba(126, 162, 56, 0.25)';
+
+            setTimeout(() => {
+                element.style.backgroundColor = originalBg;
+                setTimeout(() => {
+                    element.style.transition = '';
+                }, 500);
+            }, 800);
+
+            console.log('[Sidebar Scroll] Scroll completato');
+        } catch (error) {
+            console.error('[Sidebar Scroll] Errore:', error);
+        }
+    }
+
     // Funzione per inizializzare lo stato della sidebar basato sull'URL
     function initSidebarState() {
         const urlParams = new URLSearchParams(window.location.search);
+        const sidebar = document.querySelector('.sidebar');
+        let elementToScroll = null;
+
+        console.log('[Sidebar] Init stato sidebar, params:', Object.fromEntries(urlParams));
 
         if (urlParams.has('varieta')) {
             document.body.classList.add('variety-selected');
 
-            // Evidenzia visualmente l'elemento della varietà selezionata
+            // Evidenzia visivamente l'elemento della varietà selezionata
             const varietyId = urlParams.get('varieta');
             const selectedItem = document.querySelector(`.filter-item[data-variety-id="${varietyId}"]`);
+            console.log('[Sidebar] Cercando varietà ID:', varietyId, 'Trovato:', selectedItem);
+
             if (selectedItem) {
                 selectedItem.classList.add('active');
 
@@ -133,6 +184,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         category.classList.add('active');
                     }
                 }
+
+                // Segna per scroll
+                elementToScroll = selectedItem;
+                console.log('[Sidebar] Varietà trovata, sarà scrollata');
             }
         }
 
@@ -140,6 +195,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (urlParams.has('specie') && !urlParams.has('varieta')) {
             const specieId = urlParams.get('specie');
             const specieCategory = document.querySelector(`.filter-category[data-url*="specie=${specieId}"]`);
+            console.log('[Sidebar] Cercando specie ID:', specieId, 'Trovato:', specieCategory);
 
             if (specieCategory) {
                 specieCategory.classList.add('active');
@@ -153,6 +209,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (filterIcon) {
                     filterIcon.classList.add('expanded');
                 }
+
+                // Segna per scroll
+                elementToScroll = specieCategory;
+                console.log('[Sidebar] Specie trovata, sarà scrollata');
             }
         }
 
@@ -162,6 +222,17 @@ document.addEventListener('DOMContentLoaded', function () {
             if (viewAllLink) {
                 viewAllLink.classList.add('active');
             }
+        }
+
+        // SCROLL AUTOMATICO: dopo aver impostato tutto, scrolla all'elemento
+        if (sidebar && elementToScroll) {
+            console.log('[Sidebar] Programmo scroll a elemento...');
+            // Timeout per assicurarsi che il layout sia completato
+            setTimeout(() => {
+                scrollSidebarToElement(sidebar, elementToScroll);
+            }, 200);
+        } else {
+            console.log('[Sidebar] Nessuno scroll necessario. Sidebar:', !!sidebar, 'Elemento:', !!elementToScroll);
         }
     }
 
