@@ -159,13 +159,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 // Scrolla alla varietà selezionata nella sidebar
+                // Usa un delay maggiore per permettere al DOM di aggiornarsi completamente
                 setTimeout(() => {
-                    selectedItem.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'center',
-                        inline: 'nearest'
-                    });
-                }, 200);
+                    if (selectedItem) {
+                        // Usa requestAnimationFrame per assicurarsi che il layout sia completo
+                        requestAnimationFrame(() => {
+                            requestAnimationFrame(() => {
+                                selectedItem.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'center',
+                                    inline: 'nearest'
+                                });
+                            });
+                        });
+                    }
+                }, 500);
             }
         }
 
@@ -177,12 +185,18 @@ document.addEventListener('DOMContentLoaded', function () {
             if (specieCategory) {
                 // Scrolla alla specie selezionata
                 setTimeout(() => {
-                    specieCategory.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start',
-                        inline: 'nearest'
-                    });
-                }, 200);
+                    if (specieCategory) {
+                        requestAnimationFrame(() => {
+                            requestAnimationFrame(() => {
+                                specieCategory.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'start',
+                                    inline: 'nearest'
+                                });
+                            });
+                        });
+                    }
+                }, 500);
             }
         }
     }
