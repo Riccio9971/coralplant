@@ -97,6 +97,41 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
             }
+
+            // Gestione click sulla categoria per navigare
+            category.addEventListener('click', function (e) {
+                // Ignora se si clicca sull'icona (gestito sopra)
+                if (e.target.closest('.filter-icon')) {
+                    return;
+                }
+
+                const url = this.getAttribute('data-url');
+                if (url) {
+                    document.body.classList.add('loading-transition');
+                    if ('vibrate' in navigator) {
+                        navigator.vibrate(25);
+                    }
+                    setTimeout(() => {
+                        window.location.href = url;
+                    }, 100);
+                }
+            });
+        });
+
+        // Gestione click sugli elementi varietà (intera area)
+        document.querySelectorAll('.filter-item').forEach(item => {
+            item.addEventListener('click', function () {
+                const url = this.getAttribute('data-url');
+                if (url) {
+                    document.body.classList.add('loading-transition');
+                    if ('vibrate' in navigator) {
+                        navigator.vibrate(25);
+                    }
+                    setTimeout(() => {
+                        window.location.href = url;
+                    }, 100);
+                }
+            });
         });
 
         // Inizializza lo stato della sidebar basato sui parametri URL
@@ -517,13 +552,8 @@ document.addEventListener('DOMContentLoaded', function () {
         // Gestione click sulle card dei prodotti
         if (productCards.length > 0) {
             productCards.forEach(card => {
-                // Aggiungi evento click all'intera card (tranne il pulsante "Scopri di più")
+                // Aggiungi evento click all'intera card
                 card.addEventListener('click', function(e) {
-                    // Evita di aprire la modale se si clicca sul pulsante
-                    if (e.target.closest('.view-details-btn')) {
-                        return;
-                    }
-
                     const productIndex = parseInt(this.dataset.index);
                     if (!isNaN(productIndex) && window.prodottiData && window.prodottiData[productIndex]) {
                         window.openProductModal(window.prodottiData[productIndex]);
@@ -536,14 +566,16 @@ document.addEventListener('DOMContentLoaded', function () {
         if (detailBtns.length > 0) {
             detailBtns.forEach(btn => {
                 btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation(); // Evita la propagazione dell'evento alla card
-
                     // Prendi l'indice del prodotto dal data-attribute
                     const productIndex = parseInt(this.dataset.productIndex);
+
+                    // Se il pulsante ha un productIndex valido, apri la modale
                     if (!isNaN(productIndex) && window.prodottiData && window.prodottiData[productIndex]) {
+                        e.preventDefault();
+                        e.stopPropagation(); // Evita la propagazione dell'evento alla card
                         window.openProductModal(window.prodottiData[productIndex]);
                     }
+                    // Altrimenti, permetti che l'onclick della card parent venga eseguito (per specie/varietà)
                 });
             });
         }

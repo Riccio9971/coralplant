@@ -410,15 +410,13 @@ a.product-card .product-title::after {
 .product-image {
     width: 100%;
     height: 250px;
-    object-fit: contain;
+    object-fit: cover;
     transition: transform 0.5s ease;
     background: white;
-    padding: 10px;
 }
 
-/* Rimuovi lo scale per le immagini contain per evitare tagli */
 .product-card:hover .product-image {
-    transform: scale(1.02);
+    transform: scale(1.05);
 }
 
 .product-info {
